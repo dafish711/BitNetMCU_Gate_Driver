@@ -3,8 +3,11 @@
 # Classes count
 num_classes: 40
 
-# Dataset roo directory
+# Dataset root directory
 dataset_root: '/content/drive/MyDrive/Olivetti_Dataset/olivetti_model_development_ONLY'
+
+# Test root directory
+test_root: '/content/drive/MyDrive/Olivetti_Dataset/olivetti_FINAL_TEST_SET_LOCKED_ONLY'
 
 # Model selection
 model: 'CNN_Olivetti' # 'FCMNIST' or 'CNNMNST' This is the class name of the model as defined in models.py.

@@ -33,6 +33,8 @@ def load_model(model_name, params):
         )
         if 'cnn_width' in params:
             kwargs['cnn_width'] = params['cnn_width']
+        if 'num_classes' in params:
+            kwargs['num_classes'] = params['num_classes']
         return model_class(**kwargs)
     except AttributeError:
         raise ValueError(f"Model {model_name} not found in models.py")
@@ -78,16 +80,18 @@ if __name__ == '__main__':
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load the MNIST dataset
+    from torchvision.datasets import ImageFolder
+    from olivetti_dataset import OLIVETTI_MEAN, OLIVETTI_STD
+
     transform = transforms.Compose([
-        transforms.Resize((16, 16)),  # Resize images to 16x16
+        transforms.Grayscale(num_output_channels=1),
+        transforms.Resize((16, 16)),
         transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
+        transforms.Normalize(OLIVETTI_MEAN, OLIVETTI_STD)
     ])
 
-    train_data = datasets.MNIST(root='data', train=True, transform=transform, download=True)
-    test_data = datasets.MNIST(root='data', train=False, transform=transform)
-    # Create data loaders
+    test_root = hyperparameters.get("test_root", "data")
+    test_data = ImageFolder(root=test_root, transform=transform)
     test_loader = DataLoader(test_data, batch_size=hyperparameters["batch_size"], shuffle=False)
 
     model = load_model(hyperparameters["model"], hyperparameters).to(device)

@@ -467,6 +467,7 @@ if __name__ == '__main__':
         raise ValueError(f"Unsupported dataset: {dataset_name}")
 
     transform = transforms.Compose([
+        transforms.Grayscale(num_output_channels=1),  # Ensure single channel
         transforms.Resize((16, 16)),
         transforms.ToTensor(),
         transforms.Normalize(mean, std)

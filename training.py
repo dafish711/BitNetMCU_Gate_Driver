@@ -311,8 +311,10 @@ if __name__ == '__main__':
         transforms.Normalize(mean, std)
     ])
 
-    train_data = base_dataset_train(root='data', transform=transform, download=True, **dataset_kwargs)
-    test_data = base_dataset_test(root='data', transform=transform, download=True, **dataset_kwargs_test)
+    dataset_root = hyperparameters.get("dataset_root", "data")
+
+    train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
+    test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
 
     if hyperparameters["augmentation"]:
         # Data augmentation for training data
@@ -327,7 +329,7 @@ if __name__ == '__main__':
             transforms.Normalize(mean, std)
         ])
 
-        augmented_train_data = base_dataset_train(root='data', transform=augmented_transform, download=True, **dataset_kwargs)
+        augmented_train_data = base_dataset_train(root=dataset_root, transform=augmented_transform, download=True, **dataset_kwargs)
         train_data = ConcatDataset([train_data, augmented_train_data])
 
     # Pass num_classes dynamically to model

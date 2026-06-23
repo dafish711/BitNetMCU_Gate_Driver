@@ -306,6 +306,7 @@ if __name__ == '__main__':
         raise ValueError(f"Unsupported dataset: {dataset_name}")
 
     transform = transforms.Compose([
+        transforms.Grayscale(num_output_channels=1), 
         transforms.Resize((16, 16)),
         transforms.ToTensor(),
         transforms.Normalize(mean, std)
@@ -319,6 +320,7 @@ if __name__ == '__main__':
     if hyperparameters["augmentation"]:
         # Data augmentation for training data
         augmented_transform = transforms.Compose([
+            transforms.Grayscale(num_output_channels=1),
             transforms.RandomRotation(degrees=hyperparameters["rotation1"]),
             transforms.RandomAffine(degrees=hyperparameters["rotation2"], translate=(0.1, 0.1), scale=(0.9, 1.1)),
             transforms.RandomApply([

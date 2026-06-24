@@ -380,7 +380,7 @@ if __name__ == '__main__':
             transforms.RandomRotation(degrees=hyperparameters["rotation1"]),
             transforms.RandomAffine(degrees=hyperparameters["rotation2"], translate=(0.1, 0.1), scale=(0.9, 1.1)),
             transforms.RandomApply([
-                transforms.ElasticTransform(alpha=25.0, sigma=2.5)
+                transforms.ElasticTransform(alpha=40.0, sigma=4.0)
             ], p=hyperparameters["elastictransformprobability"]),
             transforms.Resize((16, 16)),
             transforms.ToTensor(),

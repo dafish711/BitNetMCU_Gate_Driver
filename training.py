@@ -423,10 +423,22 @@ if __name__ == '__main__':
     print(f'Best epoch: {best_epoch} | Val Loss: {best_test_loss:.6f} | Val Acc: {best_test_acc:.2f}%')
 
     print('saving final model...')
-    torch.save(model.state_dict(), f'modeldata/{runname}_final.pth')
+    final_path = f'modeldata/{runname}_final.pth'
+    torch.save(model.state_dict(), final_path)
+    if os.path.exists(final_path):
+        size_kb = os.path.getsize(final_path) / 1024
+        print(f'  Confirmed: {final_path} ({size_kb:.1f} KB)')
+    else:
+        print(f'  WARNING: {final_path} was not created!')
 
     print('saving best model...')
-    torch.save(best_state_dict, f'modeldata/{runname}.pth')
+    best_path = f'modeldata/{runname}.pth'
+    torch.save(best_state_dict, best_path)
+    if os.path.exists(best_path):
+        size_kb = os.path.getsize(best_path) / 1024
+        print(f'  Confirmed: {best_path} ({size_kb:.1f} KB)')
+    else:
+        print(f'  WARNING: {best_path} was not created!')
     
     # Plot training curves
     import matplotlib.pyplot as plt

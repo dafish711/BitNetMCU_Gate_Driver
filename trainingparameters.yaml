@@ -14,7 +14,7 @@ model: 'FC_Olivetti' # 'FC_Olivetti' or 'CNN_Olivetti' This is the class name of
 dataset: 'OLIVETTI' # 'MNIST', 'Olivetti', or EMNIST splits: EMNIST_BALANCED, EMNIST_BYCLASS, EMNIST_BYMERGE, EMNIST_LETTERS, EMNIST_DIGITS, EMNIST_MNIST
   
 # Quantization setting
-QuantType: '4bitsym' # 'Ternary', 'Binary', 'BinaryBalanced', '2bitsym', '4bit', '4bitsym', '8bit', 'None", 'FP130', 'NF4'
+QuantType: '2bitsym' # 'Ternary', 'Binary', 'BinaryBalanced', '2bitsym', '4bit', '4bitsym', '8bit', 'None", 'FP130', 'NF4'
 NormType: 'RMS' # 'RMS', 'Lin', 'BatchNorm'
 WScale: 'PerTensor' # 'PerTensor', 'PerOutput'
 

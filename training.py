@@ -47,6 +47,8 @@ def load_model(model_name, params):
         if 'num_classes' in params:
             kwargs['num_classes'] = params['num_classes']
         return model_class(**kwargs)
+        if 'input_features' in params:
+            kwargs['input_features'] = params['input_features']
     except AttributeError:
         raise ValueError(f"Model {model_name} not found in models.py")
 
@@ -386,34 +388,34 @@ if __name__ == '__main__':
 
 
     if dataset_name != "GATEDRIVER":
-            transform = transforms.Compose([
-                transforms.Grayscale(num_output_channels=1), 
-                transforms.Resize((16, 16)),
-                transforms.ToTensor(),
-                transforms.Normalize(mean, std)
-            ])
+        transform = transforms.Compose([
+            transforms.Grayscale(num_output_channels=1), 
+            transforms.Resize((16, 16)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
 
-            dataset_root = hyperparameters.get("dataset_root", "data")
+        dataset_root = hyperparameters.get("dataset_root", "data")
 
-            train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
-            test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
+        train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
+        test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
 
-            if hyperparameters["augmentation"]:
-                # Data augmentation for training data
-                augmented_transform = transforms.Compose([
-                    transforms.Grayscale(num_output_channels=1),
-                    transforms.RandomRotation(degrees=hyperparameters["rotation1"]),
-                    transforms.RandomAffine(degrees=hyperparameters["rotation2"], translate=(0.1, 0.1), scale=(0.9, 1.1)),
-                    transforms.RandomApply([
-                        transforms.ElasticTransform(alpha=40.0, sigma=4.0)
-                    ], p=hyperparameters["elastictransformprobability"]),
-                    transforms.Resize((16, 16)),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean, std)
-                ])
+    if hyperparameters["augmentation"]:
+        # Data augmentation for training data
+        augmented_transform = transforms.Compose([
+            transforms.Grayscale(num_output_channels=1),
+            transforms.RandomRotation(degrees=hyperparameters["rotation1"]),
+            transforms.RandomAffine(degrees=hyperparameters["rotation2"], translate=(0.1, 0.1), scale=(0.9, 1.1)),
+            transforms.RandomApply([
+            transforms.ElasticTransform(alpha=40.0, sigma=4.0)
+            ], p=hyperparameters["elastictransformprobability"]),
+            transforms.Resize((16, 16)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
 
-                augmented_train_data = base_dataset_train(root=dataset_root, transform=augmented_transform, download=True, **dataset_kwargs)
-                train_data = ConcatDataset([train_data, augmented_train_data])
+        augmented_train_data = base_dataset_train(root=dataset_root, transform=augmented_transform, download=True, **dataset_kwargs)
+        train_data = ConcatDataset([train_data, augmented_train_data])
 
     # Pass num_classes dynamically to model
     hyperparameters['num_classes'] = num_classes

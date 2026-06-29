@@ -43,6 +43,8 @@ def load_model(model_name, params):
             #kwargs['cnn_width'] = params['cnn_width']
         if 'num_classes' in params:
             kwargs['num_classes'] = params['num_classes']
+        if 'input_features' in params:
+            kwargs['input_features'] = params['input_features']
         return model_class(**kwargs)
     except AttributeError:
         raise ValueError(f"Model {model_name} not found in models.py")

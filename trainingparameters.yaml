@@ -64,4 +64,4 @@ network_width3: 0
 runtag: "octav" # runtag is prefix for runname
 
 # Input features
-input_features: 31
+input_features: 32

@@ -83,18 +83,9 @@ if __name__ == '__main__':
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    from torchvision.datasets import ImageFolder
-    from olivetti_dataset import OLIVETTI_MEAN, OLIVETTI_STD
+    from gatedriver_dataset import GateDriverDataset
 
-    transform = transforms.Compose([
-        transforms.Grayscale(num_output_channels=1),
-        transforms.Resize((16, 16)),
-        transforms.ToTensor(),
-        transforms.Normalize(OLIVETTI_MEAN, OLIVETTI_STD)
-    ])
-
-    test_root = hyperparameters.get("test_root", "data")
-    test_data = ImageFolder(root=test_root, transform=transform)
+    test_data = GateDriverDataset(hyperparameters["test_root"])
     test_loader = DataLoader(test_data, batch_size=hyperparameters["batch_size"], shuffle=False)
 
     model = load_model(hyperparameters["model"], hyperparameters).to(device)
@@ -140,11 +131,6 @@ if __name__ == '__main__':
 
     lib = CDLL('./Bitnet_inf.dll')
     
-    # Collect data for visualization
-    viz_images = []
-    viz_true = []
-    viz_predc = []
-    viz_predpy = []
 
     for input_data, labels in test_loader2:
         input_data = input_data.view(input_data.size(0), -1).cpu().numpy()
@@ -178,11 +164,6 @@ if __name__ == '__main__':
             print(f'{counter:5} Mismatch between inference engines found. Prediction C: {result_c} Prediction Python: {predict_py[0]} True: {labels[0]}')
             mismatch +=1
             
-        viz_images.append(input_data.reshape(16, 16))
-        viz_true.append(labels[0])
-        viz_predc.append(result_c)
-        viz_predpy.append(predict_py[0])
-
         counter += 1
 
     print("size of test data:", counter)
@@ -192,25 +173,6 @@ if __name__ == '__main__':
     
     print(f'Mismatches between engines: {mismatch} ({mismatch/counter*100}%)')
     
-    # Show all test images in a grid
-    n = len(viz_images)
-    cols = 10
-    rows = math.ceil(n / cols)
-
-    fig, axes = plt.subplots(rows, cols, figsize=(cols * 1.3, rows * 1.5))
-    axes = axes.flat
-
-    for i in range(rows * cols):
-        ax = axes[i]
-        if i < n:
-            ax.imshow(viz_images[i], cmap='gray')
-            true_label = viz_true[i]
-            pred_c = viz_predc[i]
-            pred_py = viz_predpy[i]
-            color = "green" if (pred_c == true_label and pred_py == true_label) else "red"
-            ax.set_title(f"T:{true_label} C:{pred_c} Py:{pred_py}", color=color, fontsize=6)
-        ax.axis("off")
-
     plt.tight_layout()
     plt.show()
     

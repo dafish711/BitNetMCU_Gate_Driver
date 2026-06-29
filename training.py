@@ -42,8 +42,8 @@ def load_model(model_name, params):
             NormType=params["NormType"],
             WScale=params["WScale"]
         )
-        if 'cnn_width' in params:
-            kwargs['cnn_width'] = params['cnn_width']
+        #if 'cnn_width' in params:
+            #kwargs['cnn_width'] = params['cnn_width']
         if 'num_classes' in params:
             kwargs['num_classes'] = params['num_classes']
         return model_class(**kwargs)
@@ -342,7 +342,7 @@ if __name__ == '__main__':
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Dataset selection (MNIST default, EMNIST optional)
-    dataset_name = hyperparameters.get("dataset", "Olivetti").upper()
+    dataset_name = hyperparameters.get("dataset", "GATEDRIVER").upper()
 
     if dataset_name == "MNIST":
         num_classes = 10
@@ -376,37 +376,44 @@ if __name__ == '__main__':
         base_dataset_test = OlivettiFacesDataset
         dataset_kwargs = {"train": True}
         dataset_kwargs_test = {"train": False}
+    elif dataset_name == "GATEDRIVER":
+        from gatedriver_dataset import GateDriverDataset
+        num_classes = 16  # Number of unique labels in GATEDRIVER_LABELS
+        train_data = GateDriverDataset(hyperparameters["train_csv"])
+        test_data  = GateDriverDataset(hyperparameters["val_csv"])
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
 
-    transform = transforms.Compose([
-        transforms.Grayscale(num_output_channels=1), 
-        transforms.Resize((16, 16)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean, std)
-    ])
 
-    dataset_root = hyperparameters.get("dataset_root", "data")
+    if dataset_name != "GATEDRIVER":
+            transform = transforms.Compose([
+                transforms.Grayscale(num_output_channels=1), 
+                transforms.Resize((16, 16)),
+                transforms.ToTensor(),
+                transforms.Normalize(mean, std)
+            ])
 
-    train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
-    test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
+            dataset_root = hyperparameters.get("dataset_root", "data")
 
-    if hyperparameters["augmentation"]:
-        # Data augmentation for training data
-        augmented_transform = transforms.Compose([
-            transforms.Grayscale(num_output_channels=1),
-            transforms.RandomRotation(degrees=hyperparameters["rotation1"]),
-            transforms.RandomAffine(degrees=hyperparameters["rotation2"], translate=(0.1, 0.1), scale=(0.9, 1.1)),
-            transforms.RandomApply([
-                transforms.ElasticTransform(alpha=40.0, sigma=4.0)
-            ], p=hyperparameters["elastictransformprobability"]),
-            transforms.Resize((16, 16)),
-            transforms.ToTensor(),
-            transforms.Normalize(mean, std)
-        ])
+            train_data = base_dataset_train(root=dataset_root, transform=transform, download=True, **dataset_kwargs)
+            test_data = base_dataset_test(root=dataset_root, transform=transform, download=True, **dataset_kwargs_test)
 
-        augmented_train_data = base_dataset_train(root=dataset_root, transform=augmented_transform, download=True, **dataset_kwargs)
-        train_data = ConcatDataset([train_data, augmented_train_data])
+            if hyperparameters["augmentation"]:
+                # Data augmentation for training data
+                augmented_transform = transforms.Compose([
+                    transforms.Grayscale(num_output_channels=1),
+                    transforms.RandomRotation(degrees=hyperparameters["rotation1"]),
+                    transforms.RandomAffine(degrees=hyperparameters["rotation2"], translate=(0.1, 0.1), scale=(0.9, 1.1)),
+                    transforms.RandomApply([
+                        transforms.ElasticTransform(alpha=40.0, sigma=4.0)
+                    ], p=hyperparameters["elastictransformprobability"]),
+                    transforms.Resize((16, 16)),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean, std)
+                ])
+
+                augmented_train_data = base_dataset_train(root=dataset_root, transform=augmented_transform, download=True, **dataset_kwargs)
+                train_data = ConcatDataset([train_data, augmented_train_data])
 
     # Pass num_classes dynamically to model
     hyperparameters['num_classes'] = num_classes
@@ -415,7 +422,10 @@ if __name__ == '__main__':
     if hasattr(model, 'to'):
         model = model.to(device)
 
-    summary(model, input_size=(1, 16, 16))  # Assuming the input size is (1, 16, 16)
+    if dataset_name == "GATEDRIVER":
+       summary(model, input_size=(train_data.X.shape[1],))
+    else:
+       summary(model, input_size=(1, 16, 16)) # Assuming the input size is (1, 16, 16)
 
     print('training...')
     history, best_state_dict, best_epoch, best_test_loss, best_test_acc = train_model(model, device, hyperparameters, train_data, test_data)

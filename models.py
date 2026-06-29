@@ -228,7 +228,7 @@ class FC_Olivetti(nn.Module):
 class FC_GateDriver(nn.Module):
     """
     Fully Connected Neural Network for Gate Driver dataset.
-    Input features are the 32 features defined in GATEDRIVER_FEATURE_COLS.
+    Input features are the 31 features defined in GATEDRIVER_FEATURE_COLS.
     3 hidden layers with a configurable width.
 
     @cpldcpu 2024-March-24

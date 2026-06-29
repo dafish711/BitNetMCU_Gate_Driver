@@ -4,13 +4,13 @@
 num_classes: 16
 
 # Dataset root directory
-dataset_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_training/gate_driver_train.xlsx'
+dataset_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_training/gate_driver_train.xlsm'
 
 # Test root directory
-test_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_testing/gate_driver_test.xlsx'
+test_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_testing/gate_driver_test.xlsm'
 
 # Validation root directory
-validation_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_validation/gate_driver_validation.xlsx'
+validation_root: '/content/drive/MyDrive/Gate_driver_Dataset/gate_driver_validation/gate_driver_validation.xlsm'
 
 # Model selection
 model: 'FC_GateDriver' # 'FC_Olivetti' or 'CNN_Olivetti' This is the class name of the model as defined in models.py.
